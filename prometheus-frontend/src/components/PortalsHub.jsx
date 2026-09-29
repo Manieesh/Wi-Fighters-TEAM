@@ -4,6 +4,10 @@ import UiIcon from "./UiIcon";
 export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard }) {
   const [activeIframe, setActiveIframe] = useState(null);
 
+  const voterBase = import.meta.env.VITE_VOTER_PORTAL_URL || (import.meta.env.PROD ? "/voter" : "http://localhost:5174");
+  const rtoBase = import.meta.env.VITE_RTO_PORTAL_URL || (import.meta.env.PROD ? "/rto" : "http://localhost:5175");
+  const welfareBase = import.meta.env.VITE_WELFARE_PORTAL_URL || (import.meta.env.PROD ? "/welfare" : "http://localhost:5176");
+
   const portals = [
     {
       id: "voter",
@@ -11,7 +15,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
       authority: "Election Commission of India",
       icon: "identity",
       port: 5174,
-      url: `http://localhost:5174/voter/registration-form?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
+      url: `${voterBase}/voter/registration-form?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
       desc: "Dedicated electoral portal containing voter registration, existing voter login, application tracking, voter information, and update services.",
       features: [
         "Voter Registration (Form 6)",
@@ -26,7 +30,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
       authority: "Ministry of Road Transport & Highways",
       icon: "transport",
       port: 5175,
-      url: "http://localhost:5175/apply",
+      url: `${rtoBase}/apply`,
       desc: "Separate transport portal for driving licence services, learner licences, applicant tracking, and vehicle class endorsements.",
       features: [
         "Learner / Permanent Licence",
@@ -41,7 +45,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
       authority: "National Social Welfare & DBT Mission",
       icon: "welfare",
       port: 5176,
-      url: `http://localhost:5176?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
+      url: `${welfareBase}?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
       desc: "Dedicated welfare portal for discovering eligible central/state schemes, citizen details, scheme applications, and status tracking.",
       features: [
         "Pradhan Mantri Awas Yojana",
@@ -93,17 +97,17 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
           <div className="diagram-box portal-box voter">
             <span className="portal-icon"><UiIcon name="identity" size={24} /></span>
             <h5>Voter ID Portal</h5>
-            <small>Port 5174</small>
+            <small>{import.meta.env.PROD ? "/voter" : "Port 5174"}</small>
           </div>
           <div className="diagram-box portal-box rto">
             <span className="portal-icon"><UiIcon name="transport" size={24} /></span>
             <h5>RTO DL Portal</h5>
-            <small>Port 5175</small>
+            <small>{import.meta.env.PROD ? "/rto" : "Port 5175"}</small>
           </div>
           <div className="diagram-box portal-box welfare">
             <span className="portal-icon"><UiIcon name="welfare" size={24} /></span>
             <h5>Welfare Portal</h5>
-            <small>Port 5176</small>
+            <small>{import.meta.env.PROD ? "/welfare" : "Port 5176"}</small>
           </div>
         </div>
       </div>
@@ -114,7 +118,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
           <div key={p.id} className="standalone-portal-card">
             <div className="portal-card-top">
               <span className="portal-logo"><UiIcon name={p.icon} size={23} /></span>
-              <span className="port-badge">Port {p.port}</span>
+              <span className="port-badge">{import.meta.env.PROD ? p.id : `Port ${p.port}`}</span>
             </div>
 
             <h3>{p.name}</h3>
@@ -162,7 +166,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
             {activeIframe === p.id && (
               <div className="embedded-preview-container">
                 <div className="iframe-title-bar">
-                  <span>Live Preview: {p.name} (Port {p.port})</span>
+                  <span>Live Preview: {p.name}</span>
                   <a href={p.url} target="_blank" rel="noreferrer">
                     Expand <UiIcon name="external" size={13} />
                   </a>

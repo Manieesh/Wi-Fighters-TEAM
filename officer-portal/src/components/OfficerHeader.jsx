@@ -232,7 +232,7 @@ export default function OfficerHeader({
                 </button>
 
                 <a
-                  href="http://localhost:5173"
+                  href={import.meta.env.VITE_CITIZEN_PORTAL_URL || (import.meta.env.PROD ? "/" : "http://localhost:5173")}
                   target="_blank"
                   rel="noreferrer"
                   className="profile-menu-row"

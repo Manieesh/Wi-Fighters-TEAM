@@ -9,8 +9,14 @@ const connectDB = async () => {
       throw new Error("MONGO_URI is missing from .env");
     }
 
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+
     // Force Node.js DNS resolver to use public DNS
-    dns.setServers(["1.1.1.1", "8.8.8.8"]);
+    try {
+      dns.setServers(["1.1.1.1", "8.8.8.8"]);
+    } catch {}
 
     console.log("Connecting to MongoDB Atlas...");
 

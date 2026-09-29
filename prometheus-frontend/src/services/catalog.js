@@ -1,3 +1,7 @@
+const VOTER_BASE = import.meta.env.VITE_VOTER_PORTAL_URL || (import.meta.env.PROD ? "/voter" : "http://localhost:5174");
+const RTO_BASE = import.meta.env.VITE_RTO_PORTAL_URL || (import.meta.env.PROD ? "/rto" : "http://localhost:5175");
+const WELFARE_BASE = import.meta.env.VITE_WELFARE_PORTAL_URL || (import.meta.env.PROD ? "/welfare" : "http://localhost:5176");
+
 export const citizenProfile = {
   citizenId: "CITIZEN-1001",
   name: "Manieesh Kumar R",
@@ -24,7 +28,7 @@ export const availableServices = [
     status: "available",
     route: "/services/voter",
     port: 5174,
-    portalUrl: "http://localhost:5174/voter/registration-form?source=prometheus&citizenId=CITIZEN-1001",
+    portalUrl: `${VOTER_BASE}/voter/registration-form?source=prometheus&citizenId=CITIZEN-1001`,
     icon: "identity",
     features: [
       "Voter Registration (Form 6)",
@@ -50,7 +54,7 @@ export const availableServices = [
     status: "available",
     route: "/services/rto",
     port: 5175,
-    portalUrl: "http://localhost:5175/apply?source=prometheus&citizenId=CITIZEN-1001",
+    portalUrl: `${RTO_BASE}/apply?source=prometheus&citizenId=CITIZEN-1001`,
     icon: "transport",
     features: [
       "Learner & Permanent Licence",
@@ -76,7 +80,7 @@ export const availableServices = [
     status: "available",
     route: "/services/welfare",
     port: 5176,
-    portalUrl: "http://localhost:5176?source=prometheus&citizenId=CITIZEN-1001&autofill=true",
+    portalUrl: `${WELFARE_BASE}?source=prometheus&citizenId=CITIZEN-1001&autofill=true`,
     icon: "welfare",
     features: [
       "Housing Assistance & Farmer Aid",

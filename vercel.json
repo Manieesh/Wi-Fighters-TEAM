@@ -1,0 +1,134 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "prometheus-frontend": {
+      "root": "prometheus-frontend",
+      "framework": "vite"
+    },
+    "officer-portal": {
+      "root": "officer-portal",
+      "framework": "vite"
+    },
+    "rto-frontend": {
+      "root": "rto-portal/frontend",
+      "framework": "vite"
+    },
+    "welfare-portal": {
+      "root": "welfare-portal",
+      "framework": "vite"
+    },
+    "voter-portal": {
+      "root": "voter-portal",
+      "framework": "vite"
+    },
+    "prometheus-backend": {
+      "root": "prometheus-backend",
+      "entrypoint": "server.js",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "rto-backend",
+          "format": "url",
+          "env": "RTO_BACKEND_URL"
+        }
+      ]
+    },
+    "rto-backend": {
+      "root": "rto-portal/backend",
+      "entrypoint": "main:app"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api",
+      "destination": {
+        "service": "prometheus-backend",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "prometheus-backend",
+        "path": "/api/$1"
+      }
+    },
+    {
+      "source": "/rto-api",
+      "destination": {
+        "service": "rto-backend",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/rto-api/(.*)",
+      "destination": {
+        "service": "rto-backend",
+        "path": "/api/$1"
+      }
+    },
+    {
+      "source": "/officer",
+      "destination": {
+        "service": "officer-portal",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/officer/(.*)",
+      "destination": {
+        "service": "officer-portal",
+        "path": "/$1"
+      }
+    },
+    {
+      "source": "/rto",
+      "destination": {
+        "service": "rto-frontend",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/rto/(.*)",
+      "destination": {
+        "service": "rto-frontend",
+        "path": "/$1"
+      }
+    },
+    {
+      "source": "/welfare",
+      "destination": {
+        "service": "welfare-portal",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/welfare/(.*)",
+      "destination": {
+        "service": "welfare-portal",
+        "path": "/$1"
+      }
+    },
+    {
+      "source": "/voter",
+      "destination": {
+        "service": "voter-portal",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/voter/(.*)",
+      "destination": {
+        "service": "voter-portal",
+        "path": "/$1"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "prometheus-frontend",
+        "path": "/$1"
+      }
+    }
+  ]
+}

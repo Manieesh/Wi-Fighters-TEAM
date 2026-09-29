@@ -6,15 +6,45 @@ const connectDB = require("./config/db");
 
 const app = express();
 
+const mongoose = require("mongoose");
+
 // ===============================
 // MIDDLEWARE
 // ===============================
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",").map(s => s.trim()) : [])
+];
+
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176"],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ensure DB connection is established for serverless invocations
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState === 0 && process.env.MONGO_URI) {
+    try {
+      await connectDB();
+    } catch (err) {
+      console.warn("DB connection check warning:", err.message);
+    }
+  }
+  next();
+});
 
 // ===============================
 // ROUTES
@@ -71,9 +101,13 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`Prometheus Backend running on port ${PORT}`);
-  });
+  if (require.main === module) {
+    app.listen(PORT, () => {
+      console.log(`Prometheus Backend running on port ${PORT}`);
+    });
+  }
 };
 
 startServer();
+
+module.exports = app;

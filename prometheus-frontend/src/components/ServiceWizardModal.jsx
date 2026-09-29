@@ -23,13 +23,17 @@ export default function ServiceWizardModal({
   const [errorMsg, setErrorMsg] = useState("");
   const [handoffToken, setHandoffToken] = useState("");
 
+  const voterBase = import.meta.env.VITE_VOTER_PORTAL_URL || (import.meta.env.PROD ? "/voter" : "http://localhost:5174");
+  const rtoBase = import.meta.env.VITE_RTO_PORTAL_URL || (import.meta.env.PROD ? "/rto" : "http://localhost:5175");
+  const welfareBase = import.meta.env.VITE_WELFARE_PORTAL_URL || (import.meta.env.PROD ? "/welfare" : "http://localhost:5176");
+
   const serviceConfig = {
     voter: {
       name: "Voter ID Portal",
       dept: "Election Commission of India",
       icon: "identity",
       port: 5174,
-      portalUrl: `http://localhost:5174/voter/registration-form?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
+      portalUrl: `${voterBase}/voter/registration-form?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
       schemaFields: [
         { label: "Full Name", key: "name", type: "text" },
         { label: "Date of Birth", key: "dob", type: "date" },
@@ -44,7 +48,7 @@ export default function ServiceWizardModal({
       dept: "Ministry of Road Transport & Highways",
       icon: "transport",
       port: 5175,
-      portalUrl: `http://localhost:5175/apply?source=prometheus`,
+      portalUrl: `${rtoBase}/apply?source=prometheus`,
       schemaFields: [
         { label: "Applicant Name", key: "applicantName", type: "text" },
         { label: "Date of Birth", key: "dateOfBirth", type: "date" },
@@ -61,7 +65,7 @@ export default function ServiceWizardModal({
       dept: "Social Welfare & DBT Mission",
       icon: "welfare",
       port: 5176,
-      portalUrl: `http://localhost:5176?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
+      portalUrl: `${welfareBase}?citizenId=${encodeURIComponent(citizenId)}&source=prometheus`,
       schemaFields: [
         { label: "Beneficiary Name", key: "name", type: "text" },
         { label: "Date of Birth", key: "dateOfBirth", type: "date" },

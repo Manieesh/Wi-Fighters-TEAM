@@ -6,15 +6,27 @@ const router = express.Router();
 
 const startTime = Date.now();
 
-// Service definitions to monitor
-const SERVICES = [
-  { id: "voter", name: "Voter ID Service", endpoint: "http://localhost:5000/api/voter/applications", type: "Core Sovereign API" },
-  { id: "rto", name: "RTO Transport Service", endpoint: "http://localhost:5000/api/rto/applications", type: "Core Departmental API" },
-  { id: "welfare", name: "Social Welfare & DBT Service", endpoint: "http://localhost:5000/api/welfare/applications", type: "Core Beneficiary API" },
-  { id: "translate", name: "Intelligent Data Translation Engine", endpoint: "http://localhost:5000/api/health", type: "Internal Transformation Engine" },
-  { id: "consent", name: "DPDP Consent Service", endpoint: "http://localhost:5000/api/consent", type: "Privacy & Compliance Gateway" },
-  { id: "profile", name: "Citizen Identity & Profile Service", endpoint: "http://localhost:5000/api/profile/CITIZEN-1001", type: "Verified Citizen Registry" }
-];
+const getSelfBase = () => {
+  if (process.env.PROMETHEUS_BACKEND_URL) return process.env.PROMETHEUS_BACKEND_URL.replace(/\/$/, "");
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT || 5000}`;
+};
+
+const getServices = () => {
+  const selfBase = getSelfBase();
+  const rtoEndpoint = process.env.RTO_BACKEND_URL 
+    ? `${process.env.RTO_BACKEND_URL.replace(/\/$/, "")}/api/health` 
+    : `${selfBase}/api/rto/applications`;
+
+  return [
+    { id: "voter", name: "Voter ID Service", endpoint: `${selfBase}/api/voter/applications`, type: "Core Sovereign API" },
+    { id: "rto", name: "RTO Transport Service", endpoint: rtoEndpoint, type: "Core Departmental API" },
+    { id: "welfare", name: "Social Welfare & DBT Service", endpoint: `${selfBase}/api/welfare/applications`, type: "Core Beneficiary API" },
+    { id: "translate", name: "Intelligent Data Translation Engine", endpoint: `${selfBase}/api/health`, type: "Internal Transformation Engine" },
+    { id: "consent", name: "DPDP Consent Service", endpoint: `${selfBase}/api/consent`, type: "Privacy & Compliance Gateway" },
+    { id: "profile", name: "Citizen Identity & Profile Service", endpoint: `${selfBase}/api/profile/CITIZEN-1001`, type: "Verified Citizen Registry" }
+  ];
+};
 
 // In-memory counter for demo request telemetry
 const gatewayMetrics = {
@@ -59,7 +71,7 @@ async function pingService(svc) {
 // GET Gateway Status Monitor
 router.get("/status", async (req, res) => {
   try {
-    const serviceHealth = await Promise.all(SERVICES.map(pingService));
+    const serviceHealth = await Promise.all(getServices().map(pingService));
     const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
 
     gatewayMetrics.totalRequests += 1;

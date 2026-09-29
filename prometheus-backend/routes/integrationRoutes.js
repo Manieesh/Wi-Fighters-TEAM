@@ -55,15 +55,19 @@ router.post("/", async (req, res) => {
     // --------------------------------------
     // 5. Determine target service
     // --------------------------------------
+    const baseApi = process.env.PROMETHEUS_BACKEND_URL
+      ? `${process.env.PROMETHEUS_BACKEND_URL.replace(/\/$/, "")}/api`
+      : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api` : `http://localhost:${process.env.PORT || 5000}/api`);
+
     const serviceEndpoints = {
       voter:
-        "http://localhost:5000/api/voter/applications",
+        process.env.VOTER_SERVICE_URL || `${baseApi}/voter/applications`,
 
       rto:
-        "http://localhost:5000/api/rto/applications",
+        process.env.RTO_SERVICE_URL || (process.env.RTO_BACKEND_URL ? `${process.env.RTO_BACKEND_URL.replace(/\/$/, "")}/api/dl/apply` : `${baseApi}/rto/applications`),
 
       welfare:
-        "http://localhost:5000/api/welfare/applications"
+        process.env.WELFARE_SERVICE_URL || `${baseApi}/welfare/applications`
     };
 
     const targetEndpoint =

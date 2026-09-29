@@ -117,7 +117,7 @@ export default function OfficerSidebar({
 
           <div className="officer-footer-actions">
             <a
-              href="http://localhost:5173"
+              href={import.meta.env.VITE_CITIZEN_PORTAL_URL || (import.meta.env.PROD ? "/" : "http://localhost:5173")}
               target="_blank"
               rel="noreferrer"
               className="officer-footer-link"

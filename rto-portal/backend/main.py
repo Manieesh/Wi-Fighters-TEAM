@@ -5,6 +5,7 @@ FastAPI Application Entry Point
 A unified government service platform backend that connects
 to Supabase for data persistence.
 """
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,15 +37,23 @@ app = FastAPI(
 # ============================================================
 # CORS Middleware
 # Allow the React frontend to communicate with this API.
-# Adjust origins for production deployment.
 # ============================================================
+_allowed_env = os.getenv("ALLOWED_ORIGINS", "")
+_custom_origins = [o.strip() for o in _allowed_env.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",   # Vite dev server
-        "http://localhost:3000",   # Alternative dev port
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:3000",
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:5175",
+        *_custom_origins,
     ],
+    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -72,3 +81,8 @@ async def health_check():
 @app.get("/api/health", tags=["health"])
 async def api_health():
     return {"status": "ok", "database": "supabase", "message": "All systems operational."}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), reload=True)
