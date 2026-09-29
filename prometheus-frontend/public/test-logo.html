@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prometheus Logo Orbit Animation Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070d18;
+      --bg-light: #f8fafc;
+      --primary: #2563eb;
+      --cyan: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.45);
+      --blue-glow: rgba(37, 99, 235, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-dark);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    p.subtitle {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .test-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .test-card.light-card {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+    }
+
+    .test-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* =========================================================
+       PROMETHEUS ANIMATED ORBIT LOGO COMPONENT STYLES
+       ========================================================= */
+    .prometheus-logo-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      isolation: isolate;
+      /* default size */
+      width: var(--logo-size, 48px);
+      height: var(--logo-size, 48px);
+      flex-shrink: 0;
+    }
+
+    /* Size variants */
+    .prometheus-logo-wrapper.size-sm {
+      --logo-size: 36px;
+    }
+    .prometheus-logo-wrapper.size-md {
+      --logo-size: 44px;
+    }
+    .prometheus-logo-wrapper.size-lg {
+      --logo-size: 80px;
+    }
+    .prometheus-logo-wrapper.size-xl {
+      --logo-size: 160px;
+    }
+    .prometheus-logo-wrapper.size-2xl {
+      --logo-size: 240px;
+    }
+
+    /* The central Prometheus logo - STATIC, NEVER ROTATES */
+    .prometheus-logo-core {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 22%;
+      overflow: hidden;
+      z-index: 2;
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(0, 229, 255, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      transform: translateZ(0); /* GPU layer */
+      background: #030b1e;
+    }
+
+    .prometheus-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      /* Image is strictly static */
+      pointer-events: none;
+    }
+
+    /* Ambient logo backdrop glow */
+    .prometheus-logo-ambient-glow {
+      position: absolute;
+      inset: -8%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.2) 0%, rgba(37, 99, 235, 0.1) 45%, transparent 70%);
+      z-index: 1;
+      pointer-events: none;
+      filter: blur(6px);
+      opacity: 0.8;
+      border-radius: 50%;
+    }
+
+    /* 3D Orbit Stage */
+    .prometheus-orbit-stage {
+      position: absolute;
+      inset: -6%;
+      pointer-events: none;
+      z-index: 3;
+      perspective: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Inclined 3D Orbit Plane: matches the logo ring slant (-14deg tilt, 68deg incline) */
+    .prometheus-orbit-plane {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transform: rotateZ(-14deg) rotateX(68deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* The rotating ring track */
+    .prometheus-orbit-track {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      /* GPU-accelerated continuous rotation */
+      animation: prometheusOrbitSpin 10s linear infinite;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* The orbital ring visual path */
+    .prometheus-orbit-ring-visual {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      border-top-color: rgba(0, 229, 255, 0.85);
+      border-right-color: rgba(37, 99, 235, 0.7);
+      border-bottom-color: rgba(0, 229, 255, 0.4);
+      border-left-color: rgba(14, 165, 233, 0.2);
+      box-shadow: 
+        0 0 10px rgba(0, 229, 255, 0.5),
+        inset 0 0 8px rgba(0, 229, 255, 0.3);
+    }
+
+    /* Subtle glow trail along the ring */
+    .prometheus-orbit-trail {
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        rgba(0, 229, 255, 0.9) 0deg,
+        rgba(0, 162, 255, 0.6) 45deg,
+        rgba(37, 99, 235, 0.2) 90deg,
+        transparent 150deg,
+        transparent 320deg,
+        rgba(0, 229, 255, 0.4) 360deg
+      );
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+      mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+      filter: drop-shadow(0 0 6px #00e5ff);
+    }
+
+    /* Glowing Circular Nodes */
+    .prometheus-orbit-node {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+    }
+
+    /* Position nodes at different angles on the circular track (R = 50%) */
+    /* Primary lead node */
+    .prometheus-orbit-node.node-alpha {
+      transform: rotate(0deg) translateX(calc(var(--logo-size, 48px) * 0.53)) rotate(0deg);
+    }
+
+    /* Secondary companion node (matching the twin nodes in the original logo) */
+    .prometheus-orbit-node.node-beta {
+      transform: rotate(36deg) translateX(calc(var(--logo-size, 48px) * 0.53)) rotate(-36deg);
+    }
+
+    /* Third subtle telemetry node */
+    .prometheus-orbit-node.node-gamma {
+      transform: rotate(190deg) translateX(calc(var(--logo-size, 48px) * 0.53)) rotate(-190deg);
+    }
+
+    /* Glowing node dot */
+    .node-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(4px, calc(var(--logo-size, 48px) * 0.08), 8px);
+      height: clamp(4px, calc(var(--logo-size, 48px) * 0.08), 8px);
+      transform: translate(-50%, -50%) rotateX(-68deg) rotateZ(14deg); /* Counter-tilt to face camera */
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #00e5ff 55%, #0077ff 100%);
+      border-radius: 50%;
+      box-shadow: 
+        0 0 8px #00e5ff,
+        0 0 16px rgba(0, 229, 255, 0.7),
+        0 0 24px rgba(37, 99, 235, 0.4);
+      animation: prometheusNodePulse 2.8s ease-in-out infinite alternate;
+    }
+
+    .node-beta .node-dot {
+      width: clamp(4px, calc(var(--logo-size, 48px) * 0.075), 10px);
+      height: clamp(4px, calc(var(--logo-size, 48px) * 0.075), 10px);
+      animation-delay: -0.7s;
+    }
+
+    .node-gamma .node-dot {
+      width: clamp(3px, calc(var(--logo-size, 48px) * 0.06), 7px);
+      height: clamp(3px, calc(var(--logo-size, 48px) * 0.06), 7px);
+      opacity: 0.75;
+      animation-delay: -1.4s;
+    }
+
+    /* Keyframes */
+    @keyframes prometheusOrbitSpin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes prometheusNodePulse {
+      0% {
+        transform: translate(-50%, -50%) rotateX(-68deg) rotateZ(14deg) scale(0.92);
+        box-shadow: 0 0 6px #00e5ff, 0 0 12px rgba(0, 229, 255, 0.5);
+      }
+      50% {
+        transform: translate(-50%, -50%) rotateX(-68deg) rotateZ(14deg) scale(1.08);
+        box-shadow: 0 0 10px #00e5ff, 0 0 20px rgba(0, 229, 255, 0.8), 0 0 28px rgba(37, 99, 235, 0.5);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotateX(-68deg) rotateZ(14deg) scale(0.96);
+        box-shadow: 0 0 7px #00e5ff, 0 0 14px rgba(0, 229, 255, 0.6);
+      }
+    }
+
+    /* Accessibility: prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .prometheus-orbit-track {
+        animation-play-state: paused !important;
+      }
+      .node-dot {
+        animation: none !important;
+      }
+    }
+
+    /* Navbar Demo Simulation */
+    .mock-navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      margin-top: 2rem;
+    }
+
+    .mock-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      cursor: pointer;
+    }
+
+    .mock-brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mock-brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .mock-gov-tag {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .mock-brand-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Prometheus High-Tech Orbit Logo Test</h1>
+  <p class="subtitle">Validating 360° GPU-accelerated orbit with stationary central Prometheus emblem</p>
+
+  <div class="test-grid">
+    <!-- Navbar size (42px) -->
+    <div class="test-card">
+      <h3>Navbar Scale (42px)</h3>
+      <div class="prometheus-logo-wrapper size-md">
+        <div class="prometheus-logo-ambient-glow"></div>
+        <div class="prometheus-logo-core">
+          <img src="/prometheus-logo.png" alt="Prometheus Logo" class="prometheus-logo-img" />
+        </div>
+        <div class="prometheus-orbit-stage">
+          <div class="prometheus-orbit-plane">
+            <div class="prometheus-orbit-track">
+              <div class="prometheus-orbit-ring-visual"></div>
+              <div class="prometheus-orbit-trail"></div>
+              <div class="prometheus-orbit-node node-alpha">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-beta">
+                <div class="node-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.8rem; color: #94a3b8;">Exact size in application header bar</p>
+    </div>
+
+    <!-- Medium size (80px) -->
+    <div class="test-card">
+      <h3>Medium Emblem (80px)</h3>
+      <div class="prometheus-logo-wrapper size-lg">
+        <div class="prometheus-logo-ambient-glow"></div>
+        <div class="prometheus-logo-core">
+          <img src="/prometheus-logo.png" alt="Prometheus Logo" class="prometheus-logo-img" />
+        </div>
+        <div class="prometheus-orbit-stage">
+          <div class="prometheus-orbit-plane">
+            <div class="prometheus-orbit-track">
+              <div class="prometheus-orbit-ring-visual"></div>
+              <div class="prometheus-orbit-trail"></div>
+              <div class="prometheus-orbit-node node-alpha">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-beta">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-gamma">
+                <div class="node-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.8rem; color: #94a3b8;">Officer Portal & Modal Headers</p>
+    </div>
+
+    <!-- Hero / Showcase size (160px) -->
+    <div class="test-card">
+      <h3>Hero Section Scale (160px)</h3>
+      <div class="prometheus-logo-wrapper size-xl">
+        <div class="prometheus-logo-ambient-glow"></div>
+        <div class="prometheus-logo-core">
+          <img src="/prometheus-logo.png" alt="Prometheus Logo" class="prometheus-logo-img" />
+        </div>
+        <div class="prometheus-orbit-stage">
+          <div class="prometheus-orbit-plane">
+            <div class="prometheus-orbit-track">
+              <div class="prometheus-orbit-ring-visual"></div>
+              <div class="prometheus-orbit-trail"></div>
+              <div class="prometheus-orbit-node node-alpha">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-beta">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-gamma">
+                <div class="node-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.8rem; color: #94a3b8;">Showcase & Welcome Screen</p>
+    </div>
+  </div>
+
+  <!-- Simulated Navbar on light background -->
+  <div class="mock-navbar" style="max-width: 1200px;">
+    <div class="mock-nav-brand">
+      <div class="prometheus-logo-wrapper size-md">
+        <div class="prometheus-logo-ambient-glow"></div>
+        <div class="prometheus-logo-core">
+          <img src="/prometheus-logo.png" alt="Prometheus Logo" class="prometheus-logo-img" />
+        </div>
+        <div class="prometheus-orbit-stage">
+          <div class="prometheus-orbit-plane">
+            <div class="prometheus-orbit-track">
+              <div class="prometheus-orbit-ring-visual"></div>
+              <div class="prometheus-orbit-trail"></div>
+              <div class="prometheus-orbit-node node-alpha">
+                <div class="node-dot"></div>
+              </div>
+              <div class="prometheus-orbit-node node-beta">
+                <div class="node-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-brand-text">
+        <div class="mock-brand-title">
+          PROMETHEUS <span class="mock-gov-tag">GOV</span>
+        </div>
+        <span class="mock-brand-sub">Unified Digital Governance Platform</span>
+      </div>
+    </div>
+    <div style="font-size: 0.85rem; color: #2563eb; font-weight: 600;">
+      Citizen Gateway • National Single Sign-On
+    </div>
+  </div>
+
+</body>
+</html>
