@@ -124,7 +124,7 @@
       }
     },
     {
-      "source": "/welfare",
+      "source": "/npm run buildwelfare",
       "destination": {
         "service": "welfare-portal",
         "path": "/"
