@@ -65,8 +65,19 @@ function AppContent() {
       <div id="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Navigate to="/" replace />} />
+          <Route path="/services" element={<Navigate to="/voter" replace />} />
           <Route path="/voter" element={<VoterMain />} />
+          {/* Relative routes (when router basename is active) */}
+          <Route path="/register" element={<VoterRegister />} />
+          <Route path="/consent" element={<VoterConsent />} />
+          <Route path="/submit" element={<VoterSubmit />} />
+          <Route path="/update" element={<VoterUpdate />} />
+          <Route path="/login-step1" element={<VoterLoginStep1 onMobileNumber={handleMobileNumber} initialMobile={voterRegistrationState.mobileNumber} />} />
+          <Route path="/login-otp" element={<VoterLoginStep2 onOTPVerified={handleOTPVerified} />} />
+          <Route path="/login-confirm" element={<VoterLoginStep3 mobileNumber={voterRegistrationState.mobileNumber} />} />
+          <Route path="/registration-form" element={<VoterRegistrationForm mobileNumber={voterRegistrationState.mobileNumber} onSubmit={handleApplicationSubmit} />} />
+          <Route path="/confirmation" element={<VoterConfirmation applicationData={voterRegistrationState.applicationData} applicationId={voterRegistrationState.applicationId} />} />
+          {/* Direct /voter prefix routes */}
           <Route path="/voter/register" element={<VoterRegister />} />
           <Route path="/voter/consent" element={<VoterConsent />} />
           <Route path="/voter/submit" element={<VoterSubmit />} />
@@ -90,7 +101,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           {/* Subpath aliases when accessed under /voter mount */}
-          <Route path="/voter/services" element={<Services />} />
+          <Route path="/voter/services" element={<Navigate to="/voter" replace />} />
           <Route path="/voter/track" element={<TrackApplication />} />
           <Route path="/voter/identity" element={<Identity />} />
           <Route path="/voter/driving" element={<Driving />} />
@@ -115,7 +126,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL || '/'}>
       <AppContent />
     </Router>
   )

@@ -55,7 +55,7 @@ ${getLatestUpdate(request)}
 Expected Next Step:
 ${getNextStep(request.status)}
 ========================================================
-Verification Portal: http://localhost:5173
+Verification Portal: ${typeof window !== "undefined" ? window.location.origin : "https://your-domain.vercel.app"}
 This is an authentic computer-generated digital receipt.
 ========================================================`;
 

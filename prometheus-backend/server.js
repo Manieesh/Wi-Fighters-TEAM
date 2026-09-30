@@ -85,6 +85,21 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api", (req, res) => {
+  res.json({
+    success: true,
+    message: "Prometheus Integration Backend is running"
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    service: "Prometheus",
+    status: "Operational"
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,

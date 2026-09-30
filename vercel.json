@@ -23,6 +23,7 @@
     },
     "prometheus-backend": {
       "root": "prometheus-backend",
+      "framework": "express",
       "entrypoint": "server.js",
       "bindings": [
         {
@@ -35,6 +36,7 @@
     },
     "rto-backend": {
       "root": "rto-portal/backend",
+      "framework": "fastapi",
       "entrypoint": "main:app"
     }
   },
@@ -64,7 +66,7 @@
       "source": "/rto-api/(.*)",
       "destination": {
         "service": "rto-backend",
-        "path": "/api/$1"
+        "path": "/$1"
       }
     },
     {

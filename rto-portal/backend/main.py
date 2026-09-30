@@ -7,7 +7,7 @@ to Supabase for data persistence.
 """
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes.feedback import router as feedback_router
 from routes.dl_routes import router as dl_router
@@ -33,6 +33,22 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# ============================================================
+# Gateway Path Normalization Middleware
+# ============================================================
+@app.middleware("http")
+async def handle_rto_api_prefix(request: Request, call_next):
+    """
+    Handle incoming requests routed via Vercel /rto-api gateway rewrite.
+    Normalizes /rto-api/api/... or /rto-api/... to /api/... so all endpoints
+    function seamlessly whether accessed internally, locally, or via public gateway.
+    """
+    path = request.scope.get("path", "")
+    if path.startswith("/rto-api"):
+        stripped = path[len("/rto-api"):]
+        request.scope["path"] = stripped if stripped else "/"
+    return await call_next(request)
 
 # ============================================================
 # CORS Middleware
@@ -78,6 +94,7 @@ async def health_check():
     }
 
 
+@app.get("/health", tags=["health"])
 @app.get("/api/health", tags=["health"])
 async def api_health():
     return {"status": "ok", "database": "supabase", "message": "All systems operational."}

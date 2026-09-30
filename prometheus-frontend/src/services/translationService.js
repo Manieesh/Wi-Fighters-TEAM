@@ -7,7 +7,7 @@
 
 const API_BASE_URL =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
-  "http://localhost:5000/api";
+  (typeof import.meta !== "undefined" && import.meta.env?.PROD ? "/api" : "http://localhost:5000/api");
 
 // Mapping from display/language key or locale to 2-letter ISO code
 const LANG_MAP = {

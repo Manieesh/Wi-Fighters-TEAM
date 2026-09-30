@@ -4,19 +4,12 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const navLinks = [
   { label: 'Home', to: '/' },
-<<<<<<< HEAD
-  { label: 'Voter Services', to: '/voter' },
-  { label: 'Register to Vote', to: '/voter/registration-form' },
-  { label: 'Track Application', to: '/track' },
-  { label: 'Help & Support', to: '/help' },
-=======
-  { label: 'Services', items: [{ label: 'Voter Services', to: '/voter' }, { label: 'Identity Services', to: '/identity' }, { label: 'Driving Licence', to: '/driving' }, { label: 'Certificates', to: '/certificates' }, { label: 'Grievances', to: '/grievance' }] },
+  { label: 'Services', items: [{ label: 'Voter Services', to: '/voter' }, { label: 'Register to Vote (Form 6)', to: '/voter/registration-form' }, { label: 'Identity Services', to: '/identity' }, { label: 'Driving Licence', to: '/driving' }, { label: 'Certificates', to: '/certificates' }, { label: 'Grievances', to: '/grievance' }] },
   { label: 'Applications', items: [{ label: 'Track Application', to: '/track' }, { label: 'My Applications', to: '/dashboard' }, { label: 'Notifications', to: '/notifications' }] },
   { label: 'Grievances', to: '/grievance' },
   { label: 'News & Updates', to: '/news' },
   { label: 'Help & Support', items: [{ label: 'Help & Support', to: '/help' }, { label: 'FAQs', to: '/faq' }, { label: 'Contact Us', to: '/contact' }] },
   { label: 'About', to: '/about' },
->>>>>>> f4ae8c7de3ade4d344d1bd2e67ba25d122ab212c
 ]
 
 const searchableItems = [
