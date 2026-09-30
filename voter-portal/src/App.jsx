@@ -125,8 +125,9 @@ function AppContent() {
 }
 
 function App() {
+  const basename = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/'
   return (
-    <Router basename={import.meta.env.BASE_URL || '/'}>
+    <Router basename={basename}>
       <AppContent />
     </Router>
   )

@@ -30,7 +30,7 @@ export default function PortalsHub({ citizenId = "CITIZEN-1001", onLaunchWizard 
       authority: "Ministry of Road Transport & Highways",
       icon: "transport",
       port: 5175,
-      url: `${rtoBase}/apply`,
+      url: `${rtoBase}/apply?source=prometheus&citizenId=${encodeURIComponent(citizenId)}`,
       desc: "Separate transport portal for driving licence services, learner licences, applicant tracking, and vehicle class endorsements.",
       features: [
         "Learner / Permanent Licence",

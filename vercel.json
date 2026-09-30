@@ -82,16 +82,44 @@
       }
     },
     {
+      "source": "/officer/assets/(.*)",
+      "destination": {
+        "service": "officer-portal",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/officer/(.*\\.[a-zA-Z0-9]+)",
+      "destination": {
+        "service": "officer-portal",
+        "path": "/$1"
+      }
+    },
+    {
       "source": "/officer",
       "destination": {
         "service": "officer-portal",
-        "path": "/"
+        "path": "/index.html"
       }
     },
     {
       "source": "/officer/(.*)",
       "destination": {
         "service": "officer-portal",
+        "path": "/index.html"
+      }
+    },
+    {
+      "source": "/rto/assets/(.*)",
+      "destination": {
+        "service": "rto-frontend",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/rto/(.*\\.[a-zA-Z0-9]+)",
+      "destination": {
+        "service": "rto-frontend",
         "path": "/$1"
       }
     },
@@ -99,13 +127,27 @@
       "source": "/rto",
       "destination": {
         "service": "rto-frontend",
-        "path": "/"
+        "path": "/index.html"
       }
     },
     {
       "source": "/rto/(.*)",
       "destination": {
         "service": "rto-frontend",
+        "path": "/index.html"
+      }
+    },
+    {
+      "source": "/voter/assets/(.*)",
+      "destination": {
+        "service": "voter-portal",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/voter/(.*\\.[a-zA-Z0-9]+)",
+      "destination": {
+        "service": "voter-portal",
         "path": "/$1"
       }
     },
@@ -113,27 +155,55 @@
       "source": "/voter",
       "destination": {
         "service": "voter-portal",
-        "path": "/"
+        "path": "/index.html"
       }
     },
     {
       "source": "/voter/(.*)",
       "destination": {
         "service": "voter-portal",
+        "path": "/index.html"
+      }
+    },
+    {
+      "source": "/welfare/assets/(.*)",
+      "destination": {
+        "service": "welfare-portal",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/welfare/(.*\\.[a-zA-Z0-9]+)",
+      "destination": {
+        "service": "welfare-portal",
         "path": "/$1"
       }
     },
     {
-      "source": "/npm run buildwelfare",
+      "source": "/welfare",
       "destination": {
         "service": "welfare-portal",
-        "path": "/"
+        "path": "/index.html"
       }
     },
     {
       "source": "/welfare/(.*)",
       "destination": {
         "service": "welfare-portal",
+        "path": "/index.html"
+      }
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": {
+        "service": "prometheus-frontend",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/(.*\\.[a-zA-Z0-9]+)",
+      "destination": {
+        "service": "prometheus-frontend",
         "path": "/$1"
       }
     },
@@ -141,7 +211,7 @@
       "source": "/(.*)",
       "destination": {
         "service": "prometheus-frontend",
-        "path": "/$1"
+        "path": "/index.html"
       }
     }
   ]
